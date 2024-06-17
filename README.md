@@ -1,7 +1,7 @@
 Secure Sockets Tutorial (C)
 ===
 
-This repository holds the source code for the Net Privacy Pro Secure Sockets tutorial in C. Here, you can find a server and a client application, both using OpenSSL to establish a connection, and securely transmit data back and forth before closing the connection cleanly again.
+This repository holds the source code for the Net Privacy Pro Secure Sockets tutorial in C. Here, you can find a server and a client application, both using OpenSSL to establish a connection, and securely transmit data back and forth before closing the connection cleanly again. You can find the accompanying tutorial [here](https://netprivacypro.com/how-to-use-secure-sockets-in-c-on-linux/).
 
 Dependencies
 ---
