@@ -44,6 +44,21 @@ SSL_CTX* create_context() {
 }
 
 /**
+ * Configure the SSL context to verify the server's certificate
+ */
+void configure_context(SSL_CTX *ctx) {
+    // Load the server's certificate (acting as the CA certificate here)
+    if (SSL_CTX_load_verify_locations(ctx, "cert.pem", NULL) <= 0) {
+        ERR_print_errors_fp(stderr);
+        exit(EXIT_FAILURE);
+    }
+
+    // Set the verification mode to verify the server certificate
+    SSL_CTX_set_verify(ctx, SSL_VERIFY_PEER, NULL);
+    SSL_CTX_set_verify_depth(ctx, 1);
+}
+
+/**
  * Main entry point for this application
  */
 int main() {
@@ -57,6 +72,8 @@ int main() {
 
     init_openssl();
     ctx = create_context();
+
+    configure_context(ctx);
 
     ssl = SSL_new(ctx);
 
@@ -83,6 +100,16 @@ int main() {
     if (SSL_connect(ssl) <= 0) {
         ERR_print_errors_fp(stderr);
     } else {
+        // Verify the server certificate
+        if (SSL_get_verify_result(ssl) != X509_V_OK) {
+            fprintf(stderr, "Failed to verify server certificate.\n");
+            SSL_free(ssl);
+            close(sock);
+            SSL_CTX_free(ctx);
+            cleanup_openssl();
+            return EXIT_FAILURE;
+        }
+
         SSL_write(ssl, message, strlen(message));
         SSL_read(ssl, buf, sizeof(buf));
         printf("Received: %s\n", buf);
